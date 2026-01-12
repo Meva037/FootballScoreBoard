@@ -11,8 +11,7 @@ import org.scoreboard.model.TournamentTable;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TournamentServiceTest {
     private TournamentService service;
@@ -69,5 +68,16 @@ class TournamentServiceTest {
         assertEquals("EN", enStats.teamId());
         assertEquals(0, enStats.points());
         assertEquals(-3, enStats.goalsDifference());
+    }
+
+    @Test
+    void shouldThrowException_WhenMatchUpdateOfNotRegisteredGroup() {
+        MatchUpdate match = new MatchUpdate("m1", "PL", "EN", 3, 0, true, true);
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            service.onMatchUpdate("Group A", match);;
+        });
+
+        assertEquals("Group Group A not registered!", exception.getMessage());
     }
 }
