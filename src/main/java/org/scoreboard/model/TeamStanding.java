@@ -14,6 +14,19 @@ public record TeamStanding(
         return new TeamStanding(id, 0, 0, 0, 0, 0, 0, 0);
     }
 
+    public TeamStanding add(TeamStanding other) {
+        return new TeamStanding(
+                this.teamId,
+                this.played + other.played,
+                this.points + other.points,
+                this.goalsScored + other.goalsScored,
+                this.goalsConceded + other.goalsConceded,
+                this.won + other.won,
+                this.drawn + other.drawn,
+                this.lost + other.lost
+        );
+    }
+
     public static TeamStanding fromMatch(String teamId, MatchUpdate match) {
         if (!match.isMatchStarted()) {
             return TeamStanding.empty(teamId);
