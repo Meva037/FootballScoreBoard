@@ -40,4 +40,17 @@ class PlayoffRoundTest {
         assertNotSame(originalRound, updatedRound);
     }
 
+    @Test
+    void shouldStorePenalties_WhenProvided() {
+        MatchUpdate m1 = new MatchUpdate("m1", "PL", "EN", 0, 0, true, false);
+        PlayoffRound round = new PlayoffRound(List.of(m1));
+
+        MatchUpdate penalties = new MatchUpdate("m1", "PL", "EN", 1, 1, 5, 4, true, true);
+        round = round.updateMatch(penalties);
+
+        MatchUpdate stored = round.getMatchesList().getFirst();
+        assertEquals(5, stored.homePenalties());
+        assertEquals(4, stored.awayPenalties());
+    }
+
 }
