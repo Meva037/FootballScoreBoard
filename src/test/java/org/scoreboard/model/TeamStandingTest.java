@@ -75,4 +75,13 @@ class TeamStandingTest {
         assertEquals("Cannot add stats of different teams: EN and PL", exception.getMessage());
     }
 
+    @Test
+    void shouldCalculateGoalDifference() {
+        TeamStanding positiveDiff = new TeamStanding("PL", 1, 3, 5, 2, 1, 0, 0);
+        TeamStanding negativeDiff = new TeamStanding("EN", 1, 0, 1, 4, 0, 0, 1);
+
+        assertEquals(3, positiveDiff.goalsDifference());
+        assertEquals(-3, negativeDiff.goalsDifference());
+    }
+
 }
