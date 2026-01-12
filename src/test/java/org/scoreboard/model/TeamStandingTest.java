@@ -50,4 +50,16 @@ class TeamStandingTest {
         assertEquals(3, stats.goalsConceded());
     }
 
+    @Test
+    void shouldAggregateStats() {
+        TeamStanding match1 = new TeamStanding("PL", 1, 3, 2, 0, 1, 0, 0);
+        TeamStanding match2 = new TeamStanding("PL", 1, 1, 1, 1, 0, 1, 0);
+
+        TeamStanding total = match1.add(match2);
+
+        assertEquals(2, total.played());
+        assertEquals(4, total.points());
+        assertEquals(3, total.goalsScored());
+    }
+
 }
