@@ -24,6 +24,14 @@ class TournamentServiceTest {
     }
 
     @Test
+    void shouldReturnEmptyJson_WhenNoGroupsCreated() throws IOException {
+        TableSnapshot snapshot = service.getLatestTable();
+
+        TournamentTable table = mapper.readValue(snapshot.json(), TournamentTable.class);
+        assertTrue(table.groups().isEmpty());
+    }
+
+    @Test
     void shouldReturnTableWithZeroStats_WhenGroupIsRegistered() throws IOException {
         List<String> teams = List.of("PL", "EN");
 
