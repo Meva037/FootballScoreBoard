@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class TournamentService {
     private static final String SNAPSHOT_REBUILD_ERROR_MESSAGE = "Error rebuilding snapshot: %s";
     private static final String SNAPSHOT_INITIAL_ERROR_MESSAGE = "Failed to create initial snapshot";
+    private static final String GROUP_NOT_REGISTERED_ERROR_MESSAGE = "Group %s not registered!";
 
     private final ConcurrentMap<String, GroupData> groupsMap = new ConcurrentHashMap<>();
     private final AtomicReference<TableSnapshot> globalSnapshot = new AtomicReference<>();
@@ -49,7 +50,12 @@ public class TournamentService {
     }
 
     public void onMatchUpdate(String groupId, MatchUpdate matchUpdate) {
-        groupsMap.computeIfPresent(groupId, (key, currentGroup) -> currentGroup.updateMatch(matchUpdate));
+        groupsMap.compute(groupId, (key, currentGroup) -> {
+            if (currentGroup == null) {
+                throw new IllegalStateException(String.format(GROUP_NOT_REGISTERED_ERROR_MESSAGE, groupId));
+            }
+            return currentGroup.updateMatch(matchUpdate);
+        });
         rebuildSnapshot();
     }
 
