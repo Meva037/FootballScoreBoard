@@ -92,4 +92,16 @@ class TournamentServiceTest {
         assertTrue(table.playoffs().containsKey("Final"));
         assertEquals("TBD", table.playoffs().get("Final").getFirst().homeTeamId());
     }
+
+    @Test
+    void shouldUpdatePlayoffMatch_WhenScoreChanges() throws IOException {
+        MatchUpdate finalMatch = new MatchUpdate("m_final", "PL", "EN", 0, 0, true, false);
+        service.createPlayoffRound("Final", List.of(finalMatch));
+
+        MatchUpdate goal = new MatchUpdate("m_final", "PL", "EN", 1, 0, true, false);
+        service.onMatchUpdate("Final", goal);
+
+        TournamentTable table = objectMapper.readValue(service.getLatestTable().json(), TournamentTable.class);
+        assertEquals(1, table.playoffs().get("Final").getFirst().homeScore());
+    }
 }
