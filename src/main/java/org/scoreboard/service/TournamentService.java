@@ -8,9 +8,7 @@ import org.scoreboard.model.TeamStanding;
 import org.scoreboard.model.TournamentTable;
 import org.scoreboard.model.aggregate.PlayoffRound;
 
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,24 +16,22 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TournamentService {
-    private static final String SNAPSHOT_REBUILD_ERROR_MESSAGE = "Error rebuilding snapshot: %s";
     private static final String SNAPSHOT_INITIAL_ERROR_MESSAGE = "Failed to create initial snapshot";
     private static final String UNKNOWN_STAGE_ERROR_MESSAGE = "Unknown stage: %s";
-
-    private final ConcurrentMap<String, GroupData> groupsMap = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, PlayoffRound> playoffsMap = new ConcurrentHashMap<>();
-    private final AtomicReference<TableSnapshot> globalSnapshot = new AtomicReference<>();
-
-    private final ObjectMapper objectMapper;
-
     private static final Comparator<TeamStanding> FIFA_RULES = Comparator
             .comparingInt(TeamStanding::points)
             .thenComparingInt(TeamStanding::goalsDifference)
             .thenComparingInt(TeamStanding::goalsScored)
             .reversed();
 
+    private final ConcurrentMap<String, GroupData> groupsMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, PlayoffRound> playoffsMap = new ConcurrentHashMap<>();
+    private final AtomicReference<TableSnapshot> globalSnapshot = new AtomicReference<>();
+
+    private final SnapshotBuilder snapshotBuilder;
+
     public TournamentService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+        this.snapshotBuilder = new SnapshotBuilder(objectMapper);
         TournamentTable emptyTable = new TournamentTable(Map.of(), null);
         try {
             byte[] initialJson = objectMapper.writeValueAsBytes(emptyTable);
@@ -68,33 +64,7 @@ public class TournamentService {
     }
 
     private synchronized void rebuildSnapshot() {
-        try {
-            Map<String, List<TeamStanding>> sortedTable = new HashMap<>();
-            for (var entry : groupsMap.entrySet()) {
-                String groupName = entry.getKey();
-                GroupData groupData = entry.getValue();
-                List<TeamStanding> sortedTeams = groupData.getStandings().values().stream()
-                        .sorted(FIFA_RULES)
-                        .toList();
-                sortedTable.put(groupName, sortedTeams);
-            }
-            Map<String, List<MatchUpdate>> playoffsData = new HashMap<>();
-            for (var entry : playoffsMap.entrySet()) {
-                playoffsData.put(entry.getKey(), entry.getValue().getMatchesList());
-            }
-
-            TournamentTable fullTable = new TournamentTable(sortedTable, playoffsData);
-            byte[] jsonBytes = objectMapper.writeValueAsBytes(fullTable);
-            String etag = "w/" + Arrays.hashCode(jsonBytes);
-
-            globalSnapshot.set(new TableSnapshot(
-                    jsonBytes,
-                    etag,
-                    System.currentTimeMillis()
-            ));
-        } catch (Exception e) {
-            System.err.printf(String.format(SNAPSHOT_REBUILD_ERROR_MESSAGE, e.getMessage()));
-        }
+        globalSnapshot.set(snapshotBuilder.build(groupsMap, playoffsMap));
     }
 
     public TableSnapshot getLatestTable() {
