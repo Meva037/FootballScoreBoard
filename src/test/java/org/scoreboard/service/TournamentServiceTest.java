@@ -27,7 +27,7 @@ class TournamentServiceTest {
     void shouldReturnEmptyJson_WhenNoGroupsCreated() throws IOException {
         TableSnapshot snapshot = service.getLatestTable();
 
-        TournamentTable table = mapper.readValue(snapshot.json(), TournamentTable.class);
+        TournamentTable table = objectMapper.readValue(snapshot.json(), TournamentTable.class);
         assertTrue(table.groups().isEmpty());
     }
 
