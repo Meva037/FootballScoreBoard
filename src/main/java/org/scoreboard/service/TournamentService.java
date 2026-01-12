@@ -1,7 +1,7 @@
 package org.scoreboard.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.scoreboard.model.GroupData;
+import org.scoreboard.model.aggregate.GroupData;
 import org.scoreboard.model.MatchUpdate;
 import org.scoreboard.model.TableSnapshot;
 import org.scoreboard.model.TeamStanding;
@@ -34,7 +34,7 @@ public class TournamentService {
 
     public TournamentService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        TournamentTable emptyTable = new TournamentTable(Map.of());
+        TournamentTable emptyTable = new TournamentTable(Map.of(), null);
         try {
             byte[] initialJson = objectMapper.writeValueAsBytes(emptyTable);
             this.globalSnapshot.set(new TableSnapshot(initialJson, "0", System.currentTimeMillis()));
@@ -71,7 +71,7 @@ public class TournamentService {
                 sortedTable.put(groupName, sortedTeams);
             }
 
-            TournamentTable fullTable = new TournamentTable(sortedTable);
+            TournamentTable fullTable = new TournamentTable(sortedTable, null);
             byte[] jsonBytes = objectMapper.writeValueAsBytes(fullTable);
             String etag = "w/" + Arrays.hashCode(jsonBytes);
 

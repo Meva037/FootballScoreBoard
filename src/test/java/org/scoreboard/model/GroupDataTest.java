@@ -1,6 +1,7 @@
 package org.scoreboard.model;
 
 import org.junit.jupiter.api.Test;
+import org.scoreboard.model.aggregate.GroupData;
 
 import java.util.List;
 import java.util.Map;

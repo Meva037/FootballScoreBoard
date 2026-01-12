@@ -1,4 +1,7 @@
-package org.scoreboard.model;
+package org.scoreboard.model.aggregate;
+
+import org.scoreboard.model.MatchUpdate;
+import org.scoreboard.model.TeamStanding;
 
 import java.util.Collection;
 import java.util.HashMap;
