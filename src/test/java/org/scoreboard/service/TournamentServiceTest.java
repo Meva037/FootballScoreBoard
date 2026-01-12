@@ -1,0 +1,45 @@
+package org.scoreboard.service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.scoreboard.model.TableSnapshot;
+import org.scoreboard.model.TeamStanding;
+import org.scoreboard.model.TournamentTable;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class TournamentServiceTest {
+    private TournamentService service;
+    private ObjectMapper objectMapper;
+
+    @BeforeEach
+    void setUp() {
+        objectMapper = new ObjectMapper();
+        service = new TournamentService(objectMapper);
+    }
+
+    @Test
+    void shouldReturnTableWithZeroStats_WhenGroupIsRegistered() throws IOException {
+        List<String> teams = List.of("PL", "EN");
+
+        service.createGroup("Group A", teams);
+        TableSnapshot snapshot = service.getLatestTable();
+        TournamentTable table = objectMapper.readValue(snapshot.json(), TournamentTable.class);
+
+        assertTrue(table.groups().containsKey("Group A"));
+        List<TeamStanding> standings = table.groups().get("Group A");
+        assertEquals(2, standings.size());
+        TeamStanding plStats = standings.stream()
+                .filter(t -> t.teamId().equals("PL"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals(0, plStats.points());
+        assertEquals(0, plStats.played());
+        assertEquals(0, plStats.goalsScored());
+    }
+}
