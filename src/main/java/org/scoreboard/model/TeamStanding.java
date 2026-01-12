@@ -55,4 +55,8 @@ public record TeamStanding(
                 w, d, l
         );
     }
+
+    public int goalsDifference() {
+        return this.goalsScored - this.goalsConceded;
+    }
 }
