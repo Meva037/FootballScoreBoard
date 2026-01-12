@@ -18,6 +18,16 @@ public class PlayoffRound {
         }
     }
 
+    private PlayoffRound(Map<String, MatchUpdate> matches) {
+        this.matches = matches;
+    }
+
+    public PlayoffRound updateMatch(MatchUpdate update) {
+        Map<String, MatchUpdate> nextMatches = new LinkedHashMap<>(this.matches);
+        nextMatches.put(update.matchId(), update);
+        return new PlayoffRound(nextMatches);
+    }
+
     public List<MatchUpdate> getMatchesList() {
         return new ArrayList<>(matches.values());
     }
