@@ -17,8 +17,8 @@ class TeamStandingTest {
         assertEquals(1, stats.won());
         assertEquals(0, stats.drawn());
         assertEquals(0, stats.lost());
-        assertEquals(2, stats.goalsFor());
-        assertEquals(1, stats.goalsAgainst());
+        assertEquals(2, stats.goalsScored());
+        assertEquals(1, stats.goalsConceded());
     }
 
     @Test
@@ -31,8 +31,8 @@ class TeamStandingTest {
         assertEquals(0, stats.won());
         assertEquals(1, stats.drawn());
         assertEquals(0, stats.lost());
-        assertEquals(1, stats.goalsFor());
-        assertEquals(1, stats.goalsAgainst());
+        assertEquals(1, stats.goalsScored());
+        assertEquals(1, stats.goalsConceded());
     }
 
     @Test
@@ -46,8 +46,8 @@ class TeamStandingTest {
         assertEquals(0, stats.won());
         assertEquals(0, stats.drawn());
         assertEquals(1, stats.lost());
-        assertEquals(0, stats.goalsFor());
-        assertEquals(3, stats.goalsAgainst());
+        assertEquals(0, stats.goalsScored());
+        assertEquals(3, stats.goalsConceded());
     }
 
 }
