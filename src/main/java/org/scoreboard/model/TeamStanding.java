@@ -10,7 +10,7 @@ public record TeamStanding(
         int drawn,
         int lost
 ) {
-    private final static String EXCEPTION_MESSAGE = "Cannot add stats of different teams: %s and %s";
+    private static final String EXCEPTION_MESSAGE = "Cannot add stats of different teams: %s and %s";
 
     public static TeamStanding empty(String id) {
         return new TeamStanding(id, 0, 0, 0, 0, 0, 0, 0);
