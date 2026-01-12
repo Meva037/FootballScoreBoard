@@ -3,6 +3,7 @@ package org.scoreboard.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.scoreboard.model.MatchUpdate;
 import org.scoreboard.model.TableSnapshot;
 import org.scoreboard.model.TeamStanding;
 import org.scoreboard.model.TournamentTable;
@@ -49,5 +50,24 @@ class TournamentServiceTest {
         assertEquals(0, plStats.points());
         assertEquals(0, plStats.played());
         assertEquals(0, plStats.goalsScored());
+    }
+
+    @Test
+    void shouldUpdateStats_WhenMatchPlayed() throws IOException {
+        List<String> teams = List.of("PL", "EN", "IT", "FR");
+        MatchUpdate match = new MatchUpdate("m1", "PL", "EN", 3, 0, true, true);
+
+        service.createGroup("Group A", teams);
+        service.onMatchUpdate("Group A", match);
+
+        TournamentTable table = objectMapper.readValue(service.getLatestTable().json(), TournamentTable.class);
+        TeamStanding plStats = table.groups().get("Group A").getFirst();
+        TeamStanding enStats = table.groups().get("Group A").getLast();
+        assertEquals("PL", plStats.teamId());
+        assertEquals(3, plStats.points());
+        assertEquals(3, plStats.goalsScored());
+        assertEquals("EN", enStats.teamId());
+        assertEquals(0, enStats.points());
+        assertEquals(-3, enStats.goalsDifference());
     }
 }
