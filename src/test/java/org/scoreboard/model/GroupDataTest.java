@@ -2,6 +2,7 @@ package org.scoreboard.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,23 +11,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class GroupDataTest {
 
     @Test
-    void newGroup_ShouldHaveNoStandings() {
-        GroupData group = new GroupData();
+    void shouldInitializeWithAllTeams_HavingZeroStats() {
+        List<String> teamIds = List.of("PL", "EN", "IT", "FR");
 
-        assertTrue(group.getStandings().isEmpty());
-    }
+        GroupData group = new GroupData(teamIds);
 
-    @Test
-    void shouldCreateStandings_WhenFirstMatchAdded() {
-        GroupData group = new GroupData();
-        MatchUpdate match = new MatchUpdate("m1", "PL", "EN", 2, 1, true, false);
+        Map<String, TeamStanding> table = group.getStandings();
+        assertEquals(4, table.size());
 
-        GroupData updatedGroup = group.updateMatch(match);
-        Map<String, TeamStanding> table = updatedGroup.getStandings();
-
-        assertEquals(2, table.size());
-        assertEquals(3, table.get("PL").points());
-        assertEquals(0, table.get("EN").points());
-        assertEquals(1, table.get("PL").played());
+        teamIds.forEach(teamId -> assertTrue(table.containsKey(teamId)));
+        TeamStanding pl = table.get("PL");
+        assertEquals(0, pl.points());
+        assertEquals(0, pl.played());
+        assertEquals(0, pl.goalsScored());
+        assertEquals(0, pl.goalsConceded());
+        assertEquals(0, pl.won());
+        assertEquals(0, pl.drawn());
+        assertEquals(0, pl.lost());
     }
 }
