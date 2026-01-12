@@ -80,4 +80,16 @@ class TournamentServiceTest {
 
         assertEquals("Group Group A not registered!", exception.getMessage());
     }
+
+    @Test
+    void shouldCreatePlayoffRound_WithEmptyMatches() throws IOException {
+        MatchUpdate finalMatch = new MatchUpdate("m_final", "TBD", "TBD", 0, 0, false, false);
+
+        service.createPlayoffRound("Final", List.of(finalMatch));
+
+        TableSnapshot snapshot = service.getLatestTable();
+        TournamentTable table = objectMapper.readValue(snapshot.json(), TournamentTable.class);
+        assertTrue(table.playoffs().containsKey("Final"));
+        assertEquals("TBD", table.playoffs().get("Final").getFirst().homeTeamId());
+    }
 }

@@ -1,7 +1,8 @@
-package org.scoreboard.model;
+package org.scoreboard.model.aggregate;
 
 import org.junit.jupiter.api.Test;
-import org.scoreboard.model.aggregate.GroupData;
+import org.scoreboard.model.MatchUpdate;
+import org.scoreboard.model.TeamStanding;
 
 import java.util.List;
 import java.util.Map;
