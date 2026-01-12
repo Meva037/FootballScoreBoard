@@ -29,4 +29,21 @@ class GroupDataTest {
         assertEquals(0, pl.drawn());
         assertEquals(0, pl.lost());
     }
+
+    @Test
+    void shouldUpdateOnlyPlayingTeams_OthersRemainZero() {
+        GroupData group = new GroupData(List.of("PL", "EN", "IT", "FR"));
+        MatchUpdate match = new MatchUpdate("m1", "PL", "EN", 2, 0, true, true);
+
+        group = group.updateMatch(match);
+        Map<String, TeamStanding> table = group.getStandings();
+
+        assertEquals(4, table.size());
+        assertEquals(3, table.get("PL").points());
+        assertEquals(2, table.get("PL").goalsDifference());
+        assertEquals(0, table.get("EN").points());
+        assertEquals(-2, table.get("EN").goalsDifference());
+        assertEquals(0, table.get("IT").points());
+        assertEquals(0, table.get("IT").goalsDifference());
+    }
 }
