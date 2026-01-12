@@ -78,7 +78,7 @@ class TournamentServiceTest {
             service.onMatchUpdate("Group A", match);;
         });
 
-        assertEquals("Group Group A not registered!", exception.getMessage());
+        assertEquals("Unknown stage: Group A", exception.getMessage());
     }
 
     @Test

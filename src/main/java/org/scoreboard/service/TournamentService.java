@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class TournamentService {
     private static final String SNAPSHOT_REBUILD_ERROR_MESSAGE = "Error rebuilding snapshot: %s";
     private static final String SNAPSHOT_INITIAL_ERROR_MESSAGE = "Failed to create initial snapshot";
-    private static final String GROUP_NOT_REGISTERED_ERROR_MESSAGE = "Group %s not registered!";
+    private static final String UNKNOWN_STAGE_ERROR_MESSAGE = "Unknown stage: %s";
 
     private final ConcurrentMap<String, GroupData> groupsMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, PlayoffRound> playoffsMap = new ConcurrentHashMap<>();
@@ -56,13 +56,14 @@ public class TournamentService {
         rebuildSnapshot();
     }
 
-    public void onMatchUpdate(String groupId, MatchUpdate matchUpdate) {
-        groupsMap.compute(groupId, (key, currentGroup) -> {
-            if (currentGroup == null) {
-                throw new IllegalStateException(String.format(GROUP_NOT_REGISTERED_ERROR_MESSAGE, groupId));
-            }
-            return currentGroup.updateMatch(matchUpdate);
-        });
+    public void onMatchUpdate(String stageId, MatchUpdate matchUpdate) {
+        if (groupsMap.containsKey(stageId)) {
+            groupsMap.compute(stageId, (k, v) -> v.updateMatch(matchUpdate));
+        } else if (playoffsMap.containsKey(stageId)) {
+            playoffsMap.compute(stageId, (k, v) -> v.updateMatch(matchUpdate));
+        } else {
+            throw new IllegalStateException(String.format(UNKNOWN_STAGE_ERROR_MESSAGE, stageId));
+        }
         rebuildSnapshot();
     }
 
