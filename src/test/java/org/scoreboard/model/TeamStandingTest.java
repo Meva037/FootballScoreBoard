@@ -3,6 +3,7 @@ package org.scoreboard.model;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TeamStandingTest {
 
@@ -60,6 +61,18 @@ class TeamStandingTest {
         assertEquals(2, total.played());
         assertEquals(4, total.points());
         assertEquals(3, total.goalsScored());
+    }
+
+    @Test
+    void shouldThrowException_WhenAddingStatsOfDifferentTeams() {
+        TeamStanding en = new TeamStanding("EN", 1, 3, 2, 0, 1, 0, 0);
+        TeamStanding pl = new TeamStanding("PL", 1, 1, 1, 1, 0, 1, 0);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            en.add(pl);
+        });
+
+        assertEquals("Cannot add stats of different teams: EN and PL", exception.getMessage());
     }
 
 }
