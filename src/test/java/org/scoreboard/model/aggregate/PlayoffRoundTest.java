@@ -6,6 +6,7 @@ import org.scoreboard.model.MatchUpdate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 class PlayoffRoundTest {
 
@@ -24,6 +25,19 @@ class PlayoffRoundTest {
         assertEquals("m1", storedMatches.get(0).matchId());
         assertEquals("m2", storedMatches.get(1).matchId()); // Важливо!
         assertEquals("m3", storedMatches.get(2).matchId());
+    }
+
+    @Test
+    void shouldUpdateMatchResult_AndReturnNewInstance() {
+        MatchUpdate start = new MatchUpdate("m1", "PL", "EN", 0, 0, true, false);
+        MatchUpdate goal = new MatchUpdate("m1", "PL", "EN", 1, 0, true, false);
+
+        PlayoffRound originalRound = new PlayoffRound(List.of(start));
+        PlayoffRound updatedRound = originalRound.updateMatch(goal);
+
+        assertEquals(1, updatedRound.getMatchesList().getFirst().homeScore());
+        assertEquals(0, originalRound.getMatchesList().getFirst().homeScore());
+        assertNotSame(originalRound, updatedRound);
     }
 
 }
